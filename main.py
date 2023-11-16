@@ -69,7 +69,7 @@ for i, columns in enumerate(columns_to_plot):
     df_series = df[columns]
     df_series.plot(kind='hist', bins=40, edgecolor='black', linewidth=1.2, alpha=0.7, ax=axs[i])
     axs[i].set_title(f'Histogram for series {i+1}')
-    axs[i].set_xlabel('Temperature')
+    axs[i].set_xlabel('Temperature [°C]')
     axs[i].set_ylabel('Frequency')
 
 # Adjust layout
@@ -77,6 +77,6 @@ plt.tight_layout()
 plt.savefig('images/histogramy_temperatur.png')
 
 df[['TC1S1', 'TC1S2', 'TC1S3']].plot(kind='hist', bins=40, edgecolor='black', linewidth=1.2, alpha=0.7)
-plt.xlabel('Temperature')
+plt.xlabel('Temperature [°C]')
 plt.title('Histogram for TC1 in 3 series')
 plt.savefig('images/histogramy_temperatur_2.png')
