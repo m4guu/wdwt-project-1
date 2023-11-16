@@ -60,7 +60,7 @@ print("\n7. Odchylenie standardowe:")
 print(std_dev_values)
 
 # Select columns for histograms
-columns_to_plot = [['TC1S1', 'TC2S1'], ['TC1S2', 'TC2S2'], ['TC1S3', 'TC2S3'], ['TC1S1', 'TC1S2', 'TC1S3']]
+columns_to_plot = [['TC1S1', 'TC2S1'], ['TC1S2', 'TC2S2'], ['TC1S3', 'TC2S3']]
 
 # Plot histograms using a loop
 fig, axs = plt.subplots(1, len(columns_to_plot), figsize=(15, 5), sharey=True)
@@ -75,3 +75,8 @@ for i, columns in enumerate(columns_to_plot):
 # Adjust layout
 plt.tight_layout()
 plt.savefig('images/histogramy_temperatur.png')
+
+df[['TC1S1', 'TC1S2', 'TC1S3']].plot(kind='hist', bins=40, edgecolor='black', linewidth=1.2, alpha=0.7)
+plt.xlabel('Temperature')
+plt.title('Histogram for TC1 in 3 series')
+plt.savefig('images/histogramy_temperatur_2.png')
