@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 
 # Load the CSV file into a DataFrame
 df = pd.read_csv('data/data.csv')
+df[['TC2S3']].plot()
+plt.xlabel('Samples')
+plt.ylabel('Temperature [°C]')
+plt.title('Histogram for TC2 in series 3 before procssing')
+plt.savefig('images/before_data_processing.png')
 
 # Replace non-numeric values with NaN
 df = df.apply(pd.to_numeric, errors='coerce')
@@ -15,7 +20,25 @@ df = df.bfill()
 median_temp = df[df<40].median()
 # Replace values greater than 40 with the median for each column
 df[df > 40] = median_temp.iloc[3]
+df[['TC2S3']].plot()
+plt.xlabel('Samples')
+plt.ylabel('Temperature [°C]')
+plt.title('Histogram for TC2 in series 3 after procssing using 1st method')
+plt.savefig('images/after_data_processing_1.png')
 
+# Iteracja po kolumnach i eliminacja błędów
+for column in df.columns:
+    for i in range(1, len(df)):
+        diff = abs((df[column][i] - df[column][i-1]))
+        if diff >= 0.2:
+            df.at[i, column] = df.at[i-1, column]
+
+
+df[['TC2S3']].plot()
+plt.xlabel('Samples')
+plt.ylabel('Temperature [°C]')
+plt.title('Histogram for TC2 in series 3 after procssing using 2nd method')
+plt.savefig('images/after_data_processing_2.png')
 # 1. Wartość średnia arytmetyczna
 mean_values = df.mean()
 
@@ -67,10 +90,10 @@ fig, axs = plt.subplots(1, len(columns_to_plot), figsize=(15, 5), sharey=True)
 
 for i, columns in enumerate(columns_to_plot):
     df_series = df[columns]
-    df_series.plot(kind='hist', bins=40, edgecolor='black', linewidth=1.2, alpha=0.7, ax=axs[i])
+    df_series.plot(kind='hist', bins=41, edgecolor='black', linewidth=1.2, alpha=0.7, ax=axs[i])
     axs[i].set_title(f'Histogram for series {i+1}')
     axs[i].set_xlabel('Temperature [°C]')
-    axs[i].set_ylabel('Frequency')
+    axs[i].set_ylabel('Samples')
 
 # Adjust layout
 plt.tight_layout()
@@ -80,3 +103,16 @@ df[['TC1S1', 'TC1S2', 'TC1S3']].plot(kind='hist', bins=40, edgecolor='black', li
 plt.xlabel('Temperature [°C]')
 plt.title('Histogram for TC1 in 3 series')
 plt.savefig('images/histogramy_temperatur_2.png')
+
+print
+df[['TC1S1']].plot()
+plt.savefig('images/line_chart_TC1S1')
+df[['TC2S1']].plot()
+plt.savefig('images/line_chart_TC2S1')
+
+window_size = 5
+TC2S1_smooth = df[['TC2S1']].rolling(window=window_size).mean()
+TC2S1_smooth.plot()
+plt.savefig('images/line_chart_TC2S1_smooth')
+
+
