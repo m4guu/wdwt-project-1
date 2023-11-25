@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import norm
 
 # Load the CSV file into a DataFrame
 df = pd.read_csv('data/data.csv')  
@@ -25,6 +27,11 @@ plt.savefig('images/fig_1.png')
 # Replace values greater than 40 with the median for each column
 median_temp = df[df<40].median()
 df[df > 40] = median_temp.iloc[3]
+df[['TC2S3']].plot()
+plt.xlabel('Samples')
+plt.ylabel('Temperature [°C]')
+plt.title('TC2 in series 3 after processing using 1st method')
+plt.savefig('images/after_data_processing_1.png')
 ## 2nd method
 # Standard deviation
 std_TC2S3 = df[['TC2S3']].std().iloc[0]
@@ -35,7 +42,11 @@ for column in df.columns:
         if diff >= std_TC2S3 * 2:
             df.at[i, column] = df.at[i-1, column]
 
-
+df[['TC2S3']].plot()
+plt.xlabel('Samples')
+plt.ylabel('Temperature [°C]')
+plt.title('TC2 in series 3 after processing using 1st method')
+plt.savefig('images/after_data_processing_2.png')
 ### Fill NaN values
 # Count the number of NaN values in each column
 nan_count = df.isna().sum()
@@ -53,9 +64,9 @@ mode_values = df.mode().iloc[0]     # Wartość modalna (dominanta)
 median_values = df.median()         # Mediana
 skewness_values = df.skew()         # Skośność
 kurtosis_values = df.kurtosis()     # Szczytowość (kurtoza)
-std_dev_values = df.std()           # Odchylenie standardowe
 
-###
+### FREQUENCY ANALYSIS
+std_dev_values = df.std()           # standard deviation
 # Select columns for histograms
 columns_to_plot = [['TC1S1', 'TC2S1'], ['TC1S2', 'TC2S2'], ['TC1S3', 'TC2S3']]
 
@@ -72,3 +83,19 @@ for i, columns in enumerate(columns_to_plot):
 # Adjust layout
 plt.tight_layout()
 plt.savefig('images/histogramy_temperatur.png')
+
+# Fit normal distribution to the data
+mu, std = norm.fit(df[['TC1S1']])
+# Create a histogram of the data
+df[['TC1S1']].plot(kind='hist', bins=41, density=True, alpha=0.7, color='#1f77b4', edgecolor='black', linewidth=1.2)
+# Plot the fitted normal distribution
+xmin, xmax = plt.xlim()
+x = np.linspace(xmin, xmax, 100)
+p = norm.pdf(x, mu, std)
+plt.plot(x, p, color='#ff7f0e', linewidth=2)
+# Add labels and title
+plt.xlabel('Temperature [°C]')
+plt.ylabel('Density')
+plt.title('Histogram with Fitted Normal Distribution (TC1S1)')
+# Save the plot
+plt.savefig('images/fit.png')
